@@ -14,8 +14,14 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#edf6f9"
+        "backgroundColor": "#F39C12"
       }
+    },
+    "splash": {
+      "image": "./assets/images/splash-icon.png",
+      "backgroundColor": "#F39C12",  
+      "resizeMode": "contain",
+      "imageWidth": 200
     },
     "web": {
       "bundler": "metro",
@@ -30,12 +36,9 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#ff5733" 
+          "backgroundColor": "#F39C12"
         }
       ]
-    ],
-    "experiments": {
-      "typedRoutes": true
-    }
+    ]
   }
 }
