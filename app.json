@@ -13,15 +13,15 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#F39C12"
-      }
+        "foregroundImage": "./assets/images/icon.png",
+        "backgroundColor": "#ffffff",
+        "imageWidth": "75%"
+      },
+      "package": "com.mickyv.LabXplore"
     },
     "splash": {
-      "image": "./assets/images/splash-icon.png",
-      "backgroundColor": "#F39C12",  
-      "resizeMode": "contain",
-      "imageWidth": 200
+      "image": "./assets/images/icon.png",
+      "backgroundColor": "#F39C12"
     },
     "web": {
       "bundler": "metro",
@@ -33,12 +33,18 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
-          "imageWidth": 200,
-          "resizeMode": "contain",
+          "image": "./assets/images/icon.png",
           "backgroundColor": "#F39C12"
         }
       ]
-    ]
+    ],
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "0e959d3c-d68b-48c5-b9fc-2bebd43a5872"
+      }
+    }
   }
 }
