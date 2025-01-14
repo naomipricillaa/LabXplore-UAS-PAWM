@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "LabXplore",
-    "slug": "LabXplore",
+    "name": "Physilab",
+    "slug": "Physilab",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -17,7 +17,7 @@
         "backgroundColor": "#ffffff",
         "imageWidth": "75%"
       },
-      "package": "com.mickyv.LabXplore"
+      "package": "com.mickyv.Physilab"
     },
     "splash": {
       "image": "./assets/images/icon.png",
