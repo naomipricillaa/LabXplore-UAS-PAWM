@@ -72,7 +72,7 @@ export default function Profile() {
         <View style={styles.navigationBar}>
           <TouchableOpacity
             style={styles.navItem}
-            onPress={() => router.push("/profile")}
+            onPress={() => router.push("/calculator")}
           >
             <Image
               source={require("../../assets/images/calculator.png")}

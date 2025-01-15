@@ -46,7 +46,7 @@ export default function Landing() {
           {/* Online Learning Card */}
           <TouchableOpacity
             style={styles.card}
-            onPress={() => router.push("/calculator")} // Navigasi ke halaman kalkulator
+            onPress={() => router.push("/calculator")} 
           >
             <Image
               source={require("../../assets/images/calc.png")}
@@ -65,7 +65,7 @@ export default function Landing() {
           {/* Study Material Card */}
           <TouchableOpacity
             style={styles.card}
-            onPress={() => router.push("/material")} // Navigasi ke halaman "material"
+            onPress={() => router.push("/material")} 
           >
             <Image
               source={require("../../assets/images/exe.png")}
@@ -86,7 +86,7 @@ export default function Landing() {
       <View style={styles.navigationBar}>
         <TouchableOpacity
           style={styles.navItem}
-          onPress={() => router.push("/profile")}
+          onPress={() => router.push("/calculator")}
         >
           <Image
             source={require("../../assets/images/calculator.png")}
