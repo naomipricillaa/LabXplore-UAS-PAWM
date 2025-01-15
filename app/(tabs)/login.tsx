@@ -16,23 +16,43 @@ import { AuthError } from "@supabase/supabase-js";
 
 const Login = () => {
   const router = useRouter();
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState(""); // Ubah dari username ke email
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const navigateToSignup = () => {
     router.push("/signup");
   };
 
   const handleLogin = async () => {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: username,
-      password: password,
-    });
+    if (!email || !password) {
+      Alert.alert("Error", "Please fill in all fields");
+      return;
+    }
 
-    if (error) throw error;
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: email,
+        password: password,
+      });
 
-    if (data.user) {
-      router.replace("/landing");
+      if (error) {
+        Alert.alert("Error", "Invalid email or password");
+        return;
+      }
+
+      if (data.user) {
+        router.replace("/landing");
+      }
+    } catch (error) {
+      if (error instanceof AuthError) {
+        Alert.alert("Error", error.message);
+      } else {
+        Alert.alert("Error", "An unexpected error occurred");
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -50,13 +70,16 @@ const Login = () => {
       </View>
 
       <View style={styles.loginContainer}>
-        <Text style={styles.label}>Username:</Text>
+        <Text style={styles.label}>Email:</Text>
         <TextInput
           style={styles.input}
-          placeholder="Enter your username"
+          placeholder="Enter your email"
           placeholderTextColor="#999"
-          value={username}
-          onChangeText={setUsername}
+          value={email}
+          onChangeText={setEmail}
+          editable={!loading}
+          autoCapitalize="none"
+          keyboardType="email-address" // Tambahkan ini untuk keyboard email
         />
 
         <Text style={styles.label}>Password:</Text>
@@ -67,6 +90,7 @@ const Login = () => {
           secureTextEntry={true}
           value={password}
           onChangeText={setPassword}
+          editable={!loading}
         />
 
         <TouchableOpacity style={styles.button} onPress={handleLogin}>

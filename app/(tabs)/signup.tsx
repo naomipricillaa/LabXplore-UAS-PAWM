@@ -37,7 +37,7 @@ const Signup = () => {
         password: password,
         options: {
           data: {
-            username: username,
+            display_name: username, // Menyimpan username sebagai display_name
           },
         },
       });
@@ -45,11 +45,17 @@ const Signup = () => {
       if (error) throw error;
 
       if (data.user) {
-        Alert.alert(
-          "Success",
-          "Registration successful! Please verify your email."
-        );
-        router.replace("/login");
+        // Langsung login setelah signup berhasil
+        const { data: signInData, error: signInError } =
+          await supabase.auth.signInWithPassword({
+            email: email,
+            password: password,
+          });
+
+        if (signInError) throw signInError;
+
+        Alert.alert("Success", "Registration successful!");
+        router.replace("/landing");
       }
     } catch (error) {
       if (error instanceof AuthError) {
@@ -78,6 +84,8 @@ const Signup = () => {
           style={styles.input}
           placeholder="Enter your username"
           placeholderTextColor="#999"
+          value={username} // Tambahkan ini
+          onChangeText={setUsername} // Tambahkan ini
         />
 
         <Text style={styles.label}>Email:</Text>
@@ -85,6 +93,8 @@ const Signup = () => {
           style={styles.input}
           placeholder="Enter your Email"
           placeholderTextColor="#999"
+          value={email} // Tambahkan ini
+          onChangeText={setEmail} // Tambahkan ini
         />
 
         <Text style={styles.label}>Password:</Text>
@@ -93,6 +103,8 @@ const Signup = () => {
           placeholder="Enter your password"
           placeholderTextColor="#999"
           secureTextEntry={true}
+          value={password} // Tambahkan ini
+          onChangeText={setPassword} // Tambahkan ini
         />
 
         <Text style={styles.label}>Password Confirmation:</Text>
@@ -101,6 +113,8 @@ const Signup = () => {
           placeholder="Enter your password confirmation"
           placeholderTextColor="#999"
           secureTextEntry={true}
+          value={confirmPassword} // Tambahkan ini
+          onChangeText={setConfirmPassword} // Tambahkan ini
         />
 
         <TouchableOpacity style={styles.button} onPress={handleSignup}>
