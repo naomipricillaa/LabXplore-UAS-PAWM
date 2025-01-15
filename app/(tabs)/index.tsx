@@ -26,17 +26,17 @@ export default function Index() {
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
         >
-          {/* Header */}
-          <View style={styles.header}>
-            <View style={styles.logoContainer}>
-              <Image
-                source={require("../../assets/images/icon.png")}
-                style={styles.logo}
-                resizeMode="contain"
-              />
-              <Text style={styles.logoText}>PhysiLab</Text>
-            </View>
-          </View>
+
+      <View style={styles.headerContainer}>
+        <View style={styles.headerContent}>
+          <Image
+            source={require("../../assets/images/icon.png")}
+            style={styles.logo}
+            resizeMode="contain"
+          />
+          <Text style={styles.headerTitle}>PhysiLab</Text>
+        </View>
+      </View>
 
           {/* Title with subtle shadow */}
           <View style={styles.titleContainer}>
@@ -93,6 +93,31 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#FFB347",
   },
+  headerContainer: {
+    position: "absolute",
+    top: 40,
+    left: 5,
+    right: 0,
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    backgroundColor: 'transparent',
+  },
+  headerContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  headerTitle: {
+    fontSize: 24,
+    fontFamily: "Montserrat-Bold",
+    color: "#ffffff",
+    marginLeft: 8,
+  },
+  logo: {
+    width: 42,
+    height: 42,
+    tintColor: "#fff",
+  },
   scrollContent: {
     flexGrow: 1,
   },
@@ -118,30 +143,8 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     elevation: 5,
   },
-  header: {
-    marginTop: 30,
-    marginBottom: 20,
-  },
-  logoContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  logo: {
-    width: 42,
-    height: 42,
-    tintColor: "#fff",
-  },
-  logoText: {
-    fontSize: 32,
-    fontFamily: "Montserrat-Bold",
-    color: "#fff",
-    marginLeft: 12,
-    // Text shadow for better contrast
-    textShadowColor: "rgba(0, 0, 0, 0.1)",
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 4,
-  },
   titleContainer: {
+    marginTop: 87,
     marginBottom: 20,
   },
   title: {
