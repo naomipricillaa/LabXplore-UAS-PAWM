@@ -10,9 +10,24 @@ import {
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
+import { useEffect } from "react";
+import supabase from "../lib/supabase";
 
 export default function Landing() {
   const router = useRouter();
+
+  useEffect(() => {
+    checkUser();
+  }, []);
+
+  const checkUser = async () => {
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    if (!session) {
+      router.replace("/login");
+    }
+  };
 
   return (
     <LinearGradient colors={["#87bba2", "#f0f7ee"]} style={styles.container}>
@@ -69,7 +84,10 @@ export default function Landing() {
 
       {/* Bottom Navigation Bar */}
       <View style={styles.navigationBar}>
-        <TouchableOpacity style={styles.navItem}>
+        <TouchableOpacity
+          style={styles.navItem}
+          onPress={() => router.push("/profile")}
+        >
           <Image
             source={require("../../assets/images/calculator.png")}
             style={styles.navIcon}
@@ -77,7 +95,10 @@ export default function Landing() {
           <Text style={styles.navText}>Calculator</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.navItem}>
+        <TouchableOpacity
+          style={styles.navItem}
+          onPress={() => router.push("/material")}
+        >
           <Image
             source={require("../../assets/images/material.png")}
             style={styles.navIcon}
@@ -85,7 +106,10 @@ export default function Landing() {
           <Text style={styles.navText}>Material</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.navItem}>
+        <TouchableOpacity
+          style={styles.navItem}
+          onPress={() => router.push("/landing")}
+        >
           <Image
             source={require("../../assets/images/home.png")}
             style={styles.navIcon}
@@ -93,7 +117,10 @@ export default function Landing() {
           <Text style={styles.navText}>Home</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.navItem}>
+        <TouchableOpacity
+          style={styles.navItem}
+          onPress={() => router.push("/profile")}
+        >
           <Image
             source={require("../../assets/images/profile.png")}
             style={styles.navIcon}
