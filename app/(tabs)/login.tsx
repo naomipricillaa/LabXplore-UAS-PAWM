@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   StyleSheet,
   View,
@@ -10,16 +10,31 @@ import {
 } from "react-native";
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
+import { supabase } from "../lib/supabase";
 
 const Login = () => {
   const router = useRouter();
+
+  // State for email and password inputs
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const navigateToSignup = () => {
     router.push('/signup');
   };
 
-  const handleLogin = () => {
-    console.log("Login button pressed");
+  const handleLogin = async () => {
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      Alert.alert("Login Failed", error.message);
+    } else {
+      console.log("Login successful!");
+      router.push("/home"); // Navigate to your main app screen
+    }
   };
 
   return (
@@ -40,11 +55,13 @@ const Login = () => {
       </View>
 
       <View style={styles.loginContainer}>
-        <Text style={styles.label}>Username:</Text>
+        <Text style={styles.label}>Email:</Text>
         <TextInput
           style={styles.input}
-          placeholder="Enter your username"
+          placeholder="Enter your email"
           placeholderTextColor="#999"
+          value={email}
+          onChangeText={setEmail}
         />
 
         <Text style={styles.label}>Password:</Text>
@@ -53,6 +70,8 @@ const Login = () => {
           placeholder="Enter your password"
           placeholderTextColor="#999"
           secureTextEntry={true}
+          value={password}
+          onChangeText={setPassword}
         />
 
         <TouchableOpacity style={styles.button} onPress={handleLogin}>

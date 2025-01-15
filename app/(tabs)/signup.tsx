@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   StyleSheet,
   View,
@@ -10,18 +10,54 @@ import {
 } from "react-native";
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
+import { supabase } from "../lib/supabase";
 
 const Signup = () => {
     const router = useRouter();
 
+    const [username, setUsername] = useState(""); // State for username
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
+
     const navigateToLogin = () => {
-      router.push('/login'); // Navigasi ke halaman login
+      router.push('/login');
     };
   
-    const handleSignup = () => {
-      // Tambahkan logika signup di sini
-      console.log("Signup button pressed");
+    const handleSignup = async () => {
+      if (password !== confirmPassword) {
+        Alert.alert("Signup Failed", "Passwords do not match.");
+        return;
+      }
+    
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+      });
+    
+      if (error) {
+        Alert.alert("Signup Failed", error.message);
+        return;
+      }
+    
+      if (data?.user) {
+        // Add the user to the 'profile' table
+        const { error: profileError } = await supabase
+          .from("profile")
+          .insert({ id: data.user.id, username });
+    
+        if (profileError) {
+          Alert.alert("Signup Failed", profileError.message);
+        } else {
+          Alert.alert("Signup Successful", "Check your email for confirmation!");
+          router.push("/login");
+        }
+      } else {
+        Alert.alert("Signup Successful", "Check your email for confirmation!");
+        router.push("/login");
+      }
     };
+    
 
   return (
     <LinearGradient 
@@ -44,6 +80,8 @@ const Signup = () => {
           style={styles.input}
           placeholder="Enter your username"
           placeholderTextColor="#999"
+          value={username}
+          onChangeText={setUsername}
         />
 
         <Text style={styles.label}>Email:</Text>
@@ -51,6 +89,8 @@ const Signup = () => {
           style={styles.input}
           placeholder="Enter your Email"
           placeholderTextColor="#999"
+          value={email}
+          onChangeText={setEmail}
         />
 
         <Text style={styles.label}>Password:</Text>
@@ -59,6 +99,8 @@ const Signup = () => {
           placeholder="Enter your password"
           placeholderTextColor="#999"
           secureTextEntry={true}
+          value={password}
+          onChangeText={setPassword}
         />
 
         <Text style={styles.label}>Password Confirmation:</Text>
@@ -67,6 +109,8 @@ const Signup = () => {
           placeholder="Enter your password confirmation"
           placeholderTextColor="#999"
           secureTextEntry={true}
+          value={confirmPassword}
+          onChangeText={setConfirmPassword}
         />
 
         <TouchableOpacity style={styles.button} onPress={handleSignup}>
@@ -77,7 +121,7 @@ const Signup = () => {
           <Text style={styles.signupText}>Sudah punya akun? </Text>
           <TouchableOpacity onPress={navigateToLogin}>
             <Text style={styles.signupLink}>Masuk Sekarang</Text>
-        </TouchableOpacity>
+          </TouchableOpacity>
         </View>
       </View>
     </LinearGradient>
