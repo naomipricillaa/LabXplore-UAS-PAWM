@@ -11,6 +11,7 @@ export default function useCachedResources() {
         await Font.loadAsync({
           "Montserrat-Regular": require("../assets/fonts/Montserrat-Regular.ttf"),
           "Montserrat-Bold": require("../assets/fonts/Montserrat-Bold.ttf"),
+          "Montserrat-Medium": require("../assets/fonts/Montserrat-Medium.ttf"),
         });
       } catch (e) {
         console.warn(e);
