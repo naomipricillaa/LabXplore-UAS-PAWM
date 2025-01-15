@@ -1,16 +1,19 @@
-// import {
-//   StyleSheet,
-//   View,
-//   Text,
-//   Image,
-//   Dimensions,
-//   SafeAreaView,
-//   ScrollView,
-//   TouchableOpacity,
-// } from "react-native";
-// import { LinearGradient } from "expo-linear-gradient";
+import {
+  StyleSheet,
+  View,
+  Text,
+  Image,
+  Dimensions,
+  SafeAreaView,
+  ScrollView,
+  TouchableOpacity,
+} from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
+import { useRouter } from "expo-router";
 
 export default function Landing() {
+  const router = useRouter();
+
   return (
     <LinearGradient colors={["#87bba2", "#f0f7ee"]} style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -24,10 +27,12 @@ export default function Landing() {
             <Text style={styles.headerTitle}>PhysiLab</Text>
           </View>
         </View>
-        {/* Main Content Section */}
         <View style={styles.contentSection}>
           {/* Online Learning Card */}
-          <View style={styles.card}>
+          <TouchableOpacity
+            style={styles.card}
+            onPress={() => router.push("/calculator")} // Navigasi ke halaman kalkulator
+          >
             <Image
               source={require("../../assets/images/calc.png")}
               style={styles.cardImage}
@@ -40,10 +45,13 @@ export default function Landing() {
                 simulations
               </Text>
             </View>
-          </View>
+          </TouchableOpacity>
 
           {/* Study Material Card */}
-          <View style={styles.card}>
+          <TouchableOpacity
+            style={styles.card}
+            onPress={() => router.push("/material")} // Navigasi ke halaman "material"
+          >
             <Image
               source={require("../../assets/images/exe.png")}
               style={styles.cardImage}
@@ -55,7 +63,7 @@ export default function Landing() {
                 Access comprehensive study materials and resources
               </Text>
             </View>
-          </View>
+          </TouchableOpacity>
         </View>
       </ScrollView>
 

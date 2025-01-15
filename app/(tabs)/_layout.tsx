@@ -47,6 +47,20 @@ export default function TabLayout() {
           tabBarButton: () => null, // Menyembunyikan tab dari navigasi
         }}
       />
+      <Tabs.Screen
+        name="material"
+        options={{
+          title: "Material",
+          tabBarButton: () => null, // Hides tab button
+        }}
+      />
+      {/* <Tabs.Screen
+        name="landing"
+        options={{
+          title: "Landing",
+          tabBarButton: () => null, // Menyembunyikan tab dari navigasi
+        }}
+      /> */}
     </Tabs>
   );
 }
