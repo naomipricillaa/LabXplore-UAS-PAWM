@@ -11,39 +11,45 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 
-const Login = () => {
-  const router = useRouter();
+const Signup = () => {
+    const router = useRouter();
 
-  const navigateToSignup = () => {
-    router.push('/signup');
-  };
-
-  const handleLogin = () => {
-    console.log("Login button pressed");
-  };
+    const navigateToLogin = () => {
+      router.push('/login'); // Navigasi ke halaman login
+    };
+  
+    const handleSignup = () => {
+      // Tambahkan logika signup di sini
+      console.log("Signup button pressed");
+    };
 
   return (
     <LinearGradient 
       colors={['#87bba2', '#f0f7ee']} 
       style={styles.container}
     >
-      
-      <View style={styles.headerContainer}>
-        <View style={styles.headerContent}>
-          <Image
-            source={require("../../assets/images/icon.png")}
-            style={styles.logo}
-            resizeMode="contain"
-          />
-          <Text style={styles.headerTitle}>PhysiLab</Text>
+        <View style={styles.headerContainer}>
+            <View style={styles.headerContent}>
+                <Image
+                    source={require("../../assets/images/icon.png")}
+                    style={styles.logo}
+                    resizeMode="contain"
+                />
+                <Text style={styles.headerTitle}>PhysiLab</Text>
+            </View>
         </View>
-      </View>
-
       <View style={styles.loginContainer}>
         <Text style={styles.label}>Username:</Text>
         <TextInput
           style={styles.input}
           placeholder="Enter your username"
+          placeholderTextColor="#999"
+        />
+
+        <Text style={styles.label}>Email:</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Enter your Email"
           placeholderTextColor="#999"
         />
 
@@ -55,15 +61,23 @@ const Login = () => {
           secureTextEntry={true}
         />
 
-        <TouchableOpacity style={styles.button} onPress={handleLogin}>
-          <Text style={styles.buttonText}>Login</Text>
+        <Text style={styles.label}>Password Confirmation:</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Enter your password confirmation"
+          placeholderTextColor="#999"
+          secureTextEntry={true}
+        />
+
+        <TouchableOpacity style={styles.button} onPress={handleSignup}>
+          <Text style={styles.buttonText}>Sign Up</Text>
         </TouchableOpacity>
 
         <View style={styles.signupOption}>
-          <Text style={styles.signupText}>Belum punya akun? </Text>
-          <TouchableOpacity onPress={navigateToSignup}>
-            <Text style={styles.signupLink}>Daftar Sekarang</Text>
-          </TouchableOpacity>
+          <Text style={styles.signupText}>Sudah punya akun? </Text>
+          <TouchableOpacity onPress={navigateToLogin}>
+            <Text style={styles.signupLink}>Masuk Sekarang</Text>
+        </TouchableOpacity>
         </View>
       </View>
     </LinearGradient>
@@ -165,4 +179,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Login;
+export default Signup;

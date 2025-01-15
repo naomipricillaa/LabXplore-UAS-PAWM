@@ -40,6 +40,13 @@ export default function TabLayout() {
           tabBarButton: () => null, // Menyembunyikan tab dari navigasi
         }}
       />
+      <Tabs.Screen
+        name="signup"
+        options={{
+          title: "Signup",
+          tabBarButton: () => null, // Menyembunyikan tab dari navigasi
+        }}
+      />
     </Tabs>
   );
 }
