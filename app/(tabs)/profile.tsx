@@ -6,12 +6,123 @@ import {
   SafeAreaView,
   StatusBar,
   Image,
+  Alert,
+  TextInput,
+  Modal,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
+import { useEffect, useState } from "react";
+import supabase from "../lib/supabase";
 
 export default function Profile() {
   const router = useRouter();
+  const [userEmail, setUserEmail] = useState("");
+  const [displayName, setDisplayName] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
+  const [newEmail, setNewEmail] = useState("");
+  const [newDisplayName, setNewDisplayName] = useState("");
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [password, setPassword] = useState("");
+
+  useEffect(() => {
+    getUserData();
+  }, []);
+
+  const getUserData = async () => {
+    try {
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.getUser();
+
+      if (error) throw error;
+
+      if (user) {
+        setUserEmail(user.email || "");
+        setNewEmail(user.email || "");
+        setDisplayName(user.user_metadata.display_name || "");
+        setNewDisplayName(user.user_metadata.display_name || "");
+      }
+    } catch (error) {
+      Alert.alert("Error", "Failed to load user data");
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+
+      router.replace("/login");
+    } catch (error) {
+      Alert.alert("Error", "Failed to logout");
+    }
+  };
+
+  const handleEdit = () => {
+    setIsEditing(true);
+  };
+
+  const handleSave = () => {
+    if (newEmail !== userEmail || newDisplayName !== displayName) {
+      setShowPasswordModal(true);
+    } else {
+      setIsEditing(false);
+    }
+  };
+
+  const handleCancel = () => {
+    setIsEditing(false);
+    setNewEmail(userEmail);
+    setNewDisplayName(displayName);
+  };
+
+  const handleUpdateProfile = async () => {
+    try {
+      // First verify the password
+      const {
+        data: { user },
+        error: signInError,
+      } = await supabase.auth.signInWithPassword({
+        email: userEmail,
+        password: password,
+      });
+
+      if (signInError) {
+        Alert.alert("Error", "Invalid password");
+        return;
+      }
+
+      // Update email if changed
+      if (newEmail !== userEmail) {
+        const { error: updateEmailError } = await supabase.auth.updateUser({
+          email: newEmail,
+        });
+
+        if (updateEmailError) throw updateEmailError;
+      }
+
+      // Update display name if changed
+      if (newDisplayName !== displayName) {
+        const { error: updateMetadataError } = await supabase.auth.updateUser({
+          data: { display_name: newDisplayName },
+        });
+
+        if (updateMetadataError) throw updateMetadataError;
+      }
+
+      // Success
+      setUserEmail(newEmail);
+      setDisplayName(newDisplayName);
+      setShowPasswordModal(false);
+      setIsEditing(false);
+      setPassword("");
+      Alert.alert("Success", "Profile updated successfully");
+    } catch (error: any) {
+      Alert.alert("Error", error.message || "Failed to update profile");
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -32,9 +143,9 @@ export default function Profile() {
             <Text style={styles.headerTitle}>PhysiLab</Text>
           </View>
         </View>
+
         <View style={styles.content}>
           <View style={styles.profileCard}>
-            {/* Profile Icon */}
             <View style={styles.avatarContainer}>
               <View style={styles.avatar}>
                 <Image
@@ -44,29 +155,112 @@ export default function Profile() {
               </View>
             </View>
 
-            {/* Profile Information */}
             <View style={styles.infoSection}>
               <Text style={styles.label}>Username:</Text>
-              <View style={styles.infoContainer}>
-                <Text style={styles.infoText}>Mickyv65</Text>
-              </View>
+              {isEditing ? (
+                <TextInput
+                  style={styles.input}
+                  value={newDisplayName}
+                  onChangeText={setNewDisplayName}
+                  placeholder="Enter new username"
+                />
+              ) : (
+                <View style={styles.infoContainer}>
+                  <Text style={styles.infoText}>{displayName}</Text>
+                </View>
+              )}
 
               <Text style={styles.label}>Email:</Text>
-              <View style={styles.infoContainer}>
-                <Text style={styles.infoText}>mickyvalentino65@gmail.com</Text>
-              </View>
+              {isEditing ? (
+                <TextInput
+                  style={styles.input}
+                  value={newEmail}
+                  onChangeText={setNewEmail}
+                  placeholder="Enter new email"
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                />
+              ) : (
+                <View style={styles.infoContainer}>
+                  <Text style={styles.infoText}>{userEmail}</Text>
+                </View>
+              )}
 
-              {/* Buttons */}
-              <TouchableOpacity style={styles.editButton} activeOpacity={0.8}>
-                <Text style={styles.buttonText}>Edit Profile</Text>
-              </TouchableOpacity>
+              {isEditing ? (
+                <View style={styles.buttonGroup}>
+                  <TouchableOpacity
+                    style={[styles.editButton, { backgroundColor: "#FF4444" }]}
+                    onPress={handleCancel}
+                  >
+                    <Text style={styles.buttonText}>Cancel</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.editButton}
+                    onPress={handleSave}
+                  >
+                    <Text style={styles.buttonText}>Save</Text>
+                  </TouchableOpacity>
+                </View>
+              ) : (
+                <TouchableOpacity
+                  style={styles.editButton}
+                  onPress={handleEdit}
+                >
+                  <Text style={styles.buttonText}>Edit Profile</Text>
+                </TouchableOpacity>
+              )}
 
-              <TouchableOpacity style={styles.logoutButton} activeOpacity={0.8}>
+              <TouchableOpacity
+                style={styles.logoutButton}
+                activeOpacity={0.8}
+                onPress={handleLogout}
+              >
                 <Text style={styles.buttonText}>Logout</Text>
               </TouchableOpacity>
             </View>
           </View>
         </View>
+
+        {/* Password Confirmation Modal */}
+        <Modal
+          visible={showPasswordModal}
+          transparent={true}
+          animationType="fade"
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>Confirm Password</Text>
+              <Text style={styles.modalText}>
+                Please enter your password to save changes
+              </Text>
+              <TextInput
+                style={styles.passwordInput}
+                value={password}
+                onChangeText={setPassword}
+                placeholder="Enter your password"
+                secureTextEntry
+                autoCapitalize="none"
+              />
+              <View style={styles.modalButtons}>
+                <TouchableOpacity
+                  style={[styles.modalButton, { backgroundColor: "#FF4444" }]}
+                  onPress={() => {
+                    setShowPasswordModal(false);
+                    setPassword("");
+                  }}
+                >
+                  <Text style={styles.buttonText}>Cancel</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.modalButton, { backgroundColor: "#FF8C00" }]}
+                  onPress={handleUpdateProfile}
+                >
+                  <Text style={styles.buttonText}>Confirm</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
 
         {/* Bottom Navigation Bar */}
         <View style={styles.navigationBar}>
@@ -272,5 +466,64 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontSize: 12,
     fontFamily: "Montserrat-Medium",
+  },
+  input: {
+    backgroundColor: "#FFF5E6",
+    borderRadius: 12,
+    padding: 16,
+    fontSize: 16,
+    fontFamily: "Montserrat-Medium",
+    color: "#2D3436",
+  },
+  buttonGroup: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    gap: 10,
+    marginTop: 20,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContent: {
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 20,
+    width: "80%",
+    alignItems: "center",
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontFamily: "Montserrat-Bold",
+    marginBottom: 10,
+  },
+  modalText: {
+    fontSize: 14,
+    fontFamily: "Montserrat-Medium",
+    marginBottom: 20,
+    textAlign: "center",
+  },
+  passwordInput: {
+    backgroundColor: "#FFF5E6",
+    borderRadius: 12,
+    padding: 16,
+    width: "100%",
+    marginBottom: 20,
+    fontSize: 16,
+    fontFamily: "Montserrat-Medium",
+  },
+  modalButtons: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
+    gap: 10,
+  },
+  modalButton: {
+    flex: 1,
+    padding: 16,
+    borderRadius: 12,
+    alignItems: "center",
   },
 });
