@@ -1,51 +1,134 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  ScrollView,
+  Dimensions,
+} from "react-native";
+import { useRouter } from "expo-router";
 
-const IndexScreen = () => {
+export default function Index() {
+  const router = useRouter();
+
   return (
-    <View style={styles.container}>
-      {/* Welcome Section */}
-      <Text style={styles.title}>Welcome to LabXplore</Text>
-      <Text style={styles.subtitle}>Discover Physics Through Virtual Experiments</Text>
+    <ScrollView style={styles.container}>
+      {/* Header */}
+      <View style={styles.header}>
+        <View style={styles.logoContainer}>
+          <Image
+            source={require("../../assets/images/icon.png")}
+            style={styles.logo}
+            resizeMode="contain"
+          />
+          <Text style={styles.logoText}>PhysiLab</Text>
+        </View>
+      </View>
 
-      {/* Start Button */}
-      <TouchableOpacity style={styles.startButton} onPress={() => alert('Start Now')}>
-        <Text style={styles.startButtonText}>Start Now</Text>
-      </TouchableOpacity>
-    </View>
+      {/* Content */}
+      <View style={styles.contentContainer}>
+        <View style={styles.textContent}>
+          <Text style={styles.title}>
+            Explore Physics Virtually, Understand Thermodynamics Clearly
+          </Text>
+          <Text style={styles.description}>
+            PhysiLab is an interactive platform that allows you to explore
+            thermodynamics concepts through virtual simulations. Understand the
+            ideal gas law and calculate gas pressure as you observe how
+            temperature affects thermodynamic systems.
+          </Text>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => router.push("/login")}
+          >
+            <Text style={styles.buttonText}>Start Learning!</Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.imageContent}>
+          <Image
+            source={require("../../assets/images/icon.png")}
+            style={styles.illustration}
+            resizeMode="contain"
+          />
+        </View>
+      </View>
+    </ScrollView>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#EAF8F9', // Light background color
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "#fff",
+  },
+  header: {
     padding: 16,
+    backgroundColor: "#fff",
+    elevation: 4,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
-  title: {
+  logoContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  logo: {
+    width: 40,
+    height: 40,
+  },
+  logoText: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: '#006d77', // Dark teal color
-    marginBottom: 10,
+    fontWeight: "bold",
+    marginLeft: 8,
   },
-  subtitle: {
-    fontSize: 16,
-    color: '#006d77', // Dark teal color
+  contentContainer: {
+    padding: 20,
+    flex: 1,
+  },
+  textContent: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
     marginBottom: 30,
   },
-  startButton: {
-    backgroundColor: '#ffb703', // Orange button color
+  title: {
+    fontSize: 28,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: 16,
+  },
+  description: {
+    fontSize: 16,
+    textAlign: "center",
+    marginBottom: 24,
+    lineHeight: 24,
+  },
+  button: {
+    backgroundColor: "#F39C12",
     paddingVertical: 12,
     paddingHorizontal: 32,
     borderRadius: 25,
+    elevation: 3,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
-  startButtonText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#FFFFFF', // White text on the button
+  buttonText: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  imageContent: {
+    flex: 1,
+    alignItems: "center",
+  },
+  illustration: {
+    width: Dimensions.get("window").width * 0.8,
+    height: 300,
   },
 });
-
-export default IndexScreen;

@@ -1,5 +1,4 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
@@ -12,20 +11,11 @@ SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
 
-  // Hide the splash screen once the fonts are loaded
+  // Hide the splash screen once the app is ready
   useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
-
-  if (!loaded) {
-    return null; // Wait for fonts to load
-  }
+    SplashScreen.hideAsync();
+  }, []);
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
@@ -37,3 +27,12 @@ export default function RootLayout() {
     </ThemeProvider>
   );
 }
+
+import { StyleSheet } from 'react-native';
+
+export const globalStyles = StyleSheet.create({
+  text: {
+    // Use the default system font (Expo Go default behavior)
+    fontFamily: undefined, // No custom font specified
+  },
+});
