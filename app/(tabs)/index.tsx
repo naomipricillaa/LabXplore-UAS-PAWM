@@ -81,8 +81,8 @@ const styles = StyleSheet.create({
     height: 40,
   },
   logoText: {
+    fontFamily: "Montserrat-Bold",
     fontSize: 24,
-    fontWeight: "bold",
     marginLeft: 8,
   },
   contentContainer: {
@@ -96,12 +96,13 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   title: {
+    fontFamily: "Montserrat-Bold",
     fontSize: 28,
-    fontWeight: "bold",
     textAlign: "center",
     marginBottom: 16,
   },
   description: {
+    fontFamily: "Montserrat-Regular",
     fontSize: 16,
     textAlign: "center",
     marginBottom: 24,
@@ -119,9 +120,9 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
   },
   buttonText: {
+    fontFamily: "Montserrat-Bold",
     color: "#fff",
     fontSize: 18,
-    fontWeight: "bold",
   },
   imageContent: {
     flex: 1,
