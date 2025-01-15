@@ -21,13 +21,11 @@ SplashScreen.preventAutoHideAsync();
 export default function RootLayout() {
   const [session, setSession] = useState<Session | null>(null);
   const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
+  const isLoadingComplete = useCachedResources();
 
-  // Hide the splash screen once the fonts are loaded
+  // Hide the splash screen once the app is ready
   useEffect(() => {
-    if (loaded) {
+    if (isLoadingComplete) {
       SplashScreen.hideAsync();
       supabase.auth.getSession().then(({ data: { session } }) => {
         setSession(session);
@@ -37,14 +35,14 @@ export default function RootLayout() {
         setSession(session);
       });
     }
-  }, [loaded]);
+  }, [isLoadingComplete]);
 
-  if (!loaded) {
-    return null; // Wait for fonts to load
+  if (!isLoadingComplete) {
+    return null;
   }
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <StatusBar style="auto" />
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />

@@ -29,17 +29,38 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Home',
+          title: "Home",
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="login"
         options={{
-          title: 'Explore',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+          title: "Login",
+          tabBarButton: () => null, // Menyembunyikan tab dari navigasi
         }}
       />
+      <Tabs.Screen
+        name="signup"
+        options={{
+          title: "Signup",
+          tabBarButton: () => null, // Menyembunyikan tab dari navigasi
+        }}
+      />
+      <Tabs.Screen
+        name="material"
+        options={{
+          title: "Material",
+          tabBarButton: () => null, // Hides tab button
+        }}
+      />
+      {/* <Tabs.Screen
+        name="landing"
+        options={{
+          title: "Landing",
+          tabBarButton: () => null, // Menyembunyikan tab dari navigasi
+        }}
+      /> */}
     </Tabs>
   );
 }

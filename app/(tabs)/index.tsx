@@ -1,28 +1,42 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  ScrollView,
+  Dimensions,
+  SafeAreaView,
+  StatusBar,
+} from "react-native";
+import { useRouter } from "expo-router";
+import { LinearGradient } from "expo-linear-gradient";
 
-const IndexScreen = () => {
+export default function Index() {
+  const router = useRouter();
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" />
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Orange Section with Gradient */}
         <LinearGradient
-          colors={["#87bba2", "#f0f7ee"]}
+          colors={["#FFB347", "#FFD580"]}
           style={styles.orangeSection}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
         >
-          <View style={styles.headerContainer}>
-            <View style={styles.headerContent}>
-              <Image
-                source={require("../../assets/images/icon.png")}
-                style={styles.logo}
-                resizeMode="contain"
-              />
-              <Text style={styles.headerTitle}>PhysiLab</Text>
-            </View>
-          </View>
+
+      <View style={styles.headerContainer}>
+        <View style={styles.headerContent}>
+          <Image
+            source={require("../../assets/images/icon.png")}
+            style={styles.logo}
+            resizeMode="contain"
+          />
+          <Text style={styles.headerTitle}>PhysiLab</Text>
+        </View>
+      </View>
 
           {/* Title with subtle shadow */}
           <View style={styles.titleContainer}>
@@ -62,7 +76,7 @@ const IndexScreen = () => {
 
             <TouchableOpacity
               style={styles.registerButton}
-              onPress={() => router.push("/signup")}
+              onPress={() => router.push("/register")}
               activeOpacity={0.8}
             >
               <Text style={styles.registerButtonText}>Register</Text>
@@ -72,7 +86,7 @@ const IndexScreen = () => {
       </ScrollView>
     </SafeAreaView>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -86,11 +100,11 @@ const styles = StyleSheet.create({
     right: 0,
     paddingVertical: 15,
     paddingHorizontal: 20,
-    backgroundColor: "transparent",
+    backgroundColor: 'transparent',
   },
   headerContent: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 8,
   },
   headerTitle: {
@@ -134,27 +148,90 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#006d77', // Dark teal color
-    marginBottom: 10,
+    fontSize: 18,
+    fontFamily: "Montserrat-Bold",
+    color: "#fff",
+    lineHeight: 36,
+    // Text shadow for better contrast
+    textShadowColor: "rgba(0, 0, 0, 0.1)",
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 4,
   },
-  subtitle: {
+  imageContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    // Shadow for image
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+  },
+  illustration: {
+    width: Dimensions.get("window").width * 0.9,
+    height: Dimensions.get("window").width * 1.1,
+  },
+  description: {
+    fontSize: 18,
+    fontFamily: "Montserrat-Medium",
+    color: "#2D3436",
+    textAlign: "center",
+    lineHeight: 28,
+    marginBottom: 16,
+  },
+  subDescription: {
     fontSize: 16,
-    color: '#006d77', // Dark teal color
+    fontFamily: "Montserrat-Regular",
+    color: "#636E72",
+    textAlign: "center",
+    lineHeight: 24,
     marginBottom: 30,
   },
-  startButton: {
-    backgroundColor: '#ffb703', // Orange button color
-    paddingVertical: 12,
-    paddingHorizontal: 32,
-    borderRadius: 25,
+  highlightText: {
+    fontFamily: "Montserrat-Bold",
+    color: "#FF8C00",
   },
-  startButtonText: {
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 10,
+    gap: 16,
+  },
+  loginButton: {
+    flex: 1,
+    backgroundColor: "#FF8C00",
+    padding: 16,
+    borderRadius: 16,
+    alignItems: "center",
+    // Shadow for login button
+    shadowColor: "#FF8C00",
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 8,
+  },
+  registerButton: {
+    flex: 1,
+    backgroundColor: "#FFF5E6",
+    padding: 16,
+    borderRadius: 16,
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#FFE0B2",
+  },
+  loginButtonText: {
+    color: "#fff",
     fontSize: 16,
-    fontWeight: 'bold',
-    color: '#FFFFFF', // White text on the button
+    fontFamily: "Montserrat-Bold",
+  },
+  registerButtonText: {
+    color: "#FF8C00",
+    fontSize: 16,
+    fontFamily: "Montserrat-Bold",
   },
 });
-
-export default IndexScreen;
