@@ -12,14 +12,24 @@ import { LinearGradient } from "expo-linear-gradient";
 
 export default function Landing() {
   return (
-    <SafeAreaView style={styles.container}>
+    <LinearGradient colors={["#87bba2", "#f0f7ee"]} style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
+        <View style={styles.headerContainer}>
+          <View style={styles.headerContent}>
+            <Image
+              source={require("../../assets/images/icon.png")}
+              style={styles.logo}
+              resizeMode="contain"
+            />
+            <Text style={styles.headerTitle}>PhysiLab</Text>
+          </View>
+        </View>
         {/* Main Content Section */}
         <View style={styles.contentSection}>
           {/* Online Learning Card */}
           <View style={styles.card}>
             <Image
-              source={require("../../assets/images/online-learning.png")}
+              source={require("../../assets/images/calc.png")}
               style={styles.cardImage}
               resizeMode="contain"
             />
@@ -35,7 +45,7 @@ export default function Landing() {
           {/* Study Material Card */}
           <View style={styles.card}>
             <Image
-              source={require("../../assets/images/study-material.png")}
+              source={require("../../assets/images/exe.png")}
               style={styles.cardImage}
               resizeMode="contain"
             />
@@ -47,43 +57,43 @@ export default function Landing() {
             </View>
           </View>
         </View>
-
-        {/* Bottom Navigation Bar */}
-        <View style={styles.navigationBar}>
-          <TouchableOpacity style={styles.navItem}>
-            <Image
-              source={require("../../assets/icons/calculator.png")}
-              style={styles.navIcon}
-            />
-            <Text style={styles.navText}>Calculator</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.navItem}>
-            <Image
-              source={require("../../assets/icons/material.png")}
-              style={styles.navIcon}
-            />
-            <Text style={styles.navText}>Material</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.navItem}>
-            <Image
-              source={require("../../assets/icons/home.png")}
-              style={styles.navIcon}
-            />
-            <Text style={styles.navText}>Home</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.navItem}>
-            <Image
-              source={require("../../assets/icons/profile.png")}
-              style={styles.navIcon}
-            />
-            <Text style={styles.navText}>Profile</Text>
-          </TouchableOpacity>
-        </View>
       </ScrollView>
-    </SafeAreaView>
+
+      {/* Bottom Navigation Bar */}
+      <View style={styles.navigationBar}>
+        <TouchableOpacity style={styles.navItem}>
+          <Image
+            source={require("../../assets/images/calculator.png")}
+            style={styles.navIcon}
+          />
+          <Text style={styles.navText}>Calculator</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.navItem}>
+          <Image
+            source={require("../../assets/images/material.png")}
+            style={styles.navIcon}
+          />
+          <Text style={styles.navText}>Material</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.navItem}>
+          <Image
+            source={require("../../assets/images/home.png")}
+            style={styles.navIcon}
+          />
+          <Text style={styles.navText}>Home</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.navItem}>
+          <Image
+            source={require("../../assets/images/profile.png")}
+            style={styles.navIcon}
+          />
+          <Text style={styles.navText}>Profile</Text>
+        </TouchableOpacity>
+      </View>
+    </LinearGradient>
   );
 }
 
@@ -92,12 +102,38 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#F5F5F5",
   },
+  headerContainer: {
+    position: "absolute",
+    top: 40,
+    left: 5,
+    right: 0,
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    backgroundColor: "transparent",
+  },
+  headerContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  headerTitle: {
+    fontSize: 24,
+    fontFamily: "Montserrat-Bold",
+    color: "#ffffff",
+    marginLeft: 8,
+  },
+  logo: {
+    width: 42,
+    height: 42,
+    tintColor: "#fff",
+  },
   scrollContent: {
     flexGrow: 1,
   },
   contentSection: {
-    padding: 20,
+    padding: 50,
     flex: 1,
+    marginTop: 75,
   },
   card: {
     backgroundColor: "#FFFFFF",
