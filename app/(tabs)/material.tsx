@@ -7,8 +7,9 @@ import {
   SafeAreaView,
   Image,
 } from "react-native";
-import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useRouter, useFocusEffect } from "expo-router";
+import { useEffect, useState, useCallback } from "react";
+import supabase from "../lib/supabase";
 
 // Add these type definitions at the top of your file
 interface ProblemState {
@@ -46,6 +47,57 @@ export default function Material() {
     problem2: "",
     problem3: "",
   });
+
+  const resetState = useCallback(() => {
+    setSelectedAnswers({
+      problem1: "",
+      problem2: "",
+      problem3: "",
+    });
+    setCheckStatus({
+      problem1: "",
+      problem2: "",
+      problem3: "",
+    });
+  }, []);
+  useEffect(() => {
+    const checkSession = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (!session) {
+        resetState();
+        router.replace("/login");
+      }
+    };
+
+    checkSession();
+
+    return () => {
+      resetState();
+    };
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      const checkAndReset = async () => {
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+        if (!session) {
+          resetState();
+          router.replace("/login");
+        } else {
+          resetState(); // Reset state when screen comes into focus
+        }
+      };
+
+      checkAndReset();
+      return () => {
+        resetState();
+      };
+    }, [])
+  );
 
   const correctAnswers: ProblemState = {
     problem1: "Doubles",

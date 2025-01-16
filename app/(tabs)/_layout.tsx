@@ -1,15 +1,30 @@
-import { Tabs } from "expo-router";
+import { useRouter, Tabs } from "expo-router";
 import React from "react";
 import { Platform } from "react-native";
-
+import { useEffect } from "react";
 import { HapticTab } from "@/components/HapticTab";
 import { IconSymbol } from "@/components/ui/IconSymbol";
 import TabBarBackground from "@/components/ui/TabBarBackground";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
+import supabase from "../lib/supabase";
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+  const router = useRouter();
+
+  useEffect(() => {
+    checkSession();
+  }, []);
+
+  const checkSession = async () => {
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    if (!session) {
+      router.replace("/(tabs)/");
+    }
+  };
 
   return (
     <Tabs
@@ -31,9 +46,7 @@ export default function TabLayout() {
         name="index"
         options={{
           title: "Home",
-          tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="house.fill" color={color} />
-          ),
+          tabBarButton: () => null, // Menyembunyikan tab dari navigasi
         }}
       />
       <Tabs.Screen
@@ -57,13 +70,27 @@ export default function TabLayout() {
           tabBarButton: () => null, // Hides tab button
         }}
       />
-      {/* <Tabs.Screen
+      <Tabs.Screen
         name="landing"
         options={{
           title: "Landing",
           tabBarButton: () => null, // Menyembunyikan tab dari navigasi
         }}
-      /> */}
+      />
+      <Tabs.Screen
+        name="calculator"
+        options={{
+          title: "Calculator",
+          tabBarButton: () => null, // Hides tab button
+        }}
+      />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: "Profile",
+          tabBarButton: () => null, // Hides tab button
+        }}
+      />
     </Tabs>
   );
 }

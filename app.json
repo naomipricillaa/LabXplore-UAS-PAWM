@@ -21,7 +21,7 @@
     },
     "splash": {
       "image": "./assets/images/icon.png",
-      "backgroundColor": "#F39C12"
+      "backgroundColor": "#ffffff"
     },
     "web": {
       "bundler": "metro",
@@ -33,8 +33,8 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/icon.png",
-          "backgroundColor": "#F39C12"
+          "image": "./assets/images/splash-icon.png",
+          "backgroundColor": "#ffffff"
         }
       ]
     ],

@@ -9,16 +9,39 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { useRouter } from "expo-router";
-import { useEffect } from "react";
+import { useRouter, useFocusEffect } from "expo-router";
+import { useEffect, useCallback } from "react";
 import supabase from "../lib/supabase";
 
 export default function Landing() {
   const router = useRouter();
 
   useEffect(() => {
-    checkUser();
+    const checkSession = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (!session) {
+        router.replace("/login");
+      }
+    };
+
+    checkSession();
   }, []);
+  useFocusEffect(
+    useCallback(() => {
+      const checkSession = async () => {
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+        if (!session) {
+          router.replace("/login");
+        }
+      };
+
+      checkSession();
+    }, [])
+  );
 
   const checkUser = async () => {
     const {
@@ -46,7 +69,7 @@ export default function Landing() {
           {/* Online Learning Card */}
           <TouchableOpacity
             style={styles.card}
-            onPress={() => router.push("/calculator")} 
+            onPress={() => router.push("/calculator")}
           >
             <Image
               source={require("../../assets/images/calc.png")}
@@ -65,7 +88,7 @@ export default function Landing() {
           {/* Study Material Card */}
           <TouchableOpacity
             style={styles.card}
-            onPress={() => router.push("/material")} 
+            onPress={() => router.push("/material")}
           >
             <Image
               source={require("../../assets/images/exe.png")}
