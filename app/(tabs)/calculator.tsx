@@ -12,6 +12,7 @@ import { useRouter, useFocusEffect } from "expo-router";
 import { useEffect, useState, useCallback, useRef } from "react";
 import Slider from "@react-native-community/slider";
 import supabase from "../lib/supabase";
+import CustomThermometerSlider from "../../components/CustomThermometerSlider";
 
 // Default values and constants
 const DEFAULT_VALUES = {
@@ -290,25 +291,11 @@ export default function Calculator() {
           </Text>
 
           <View style={styles.thermometerContainer}>
-            <Image
-              source={require("../../assets/images/thermometer.png")}
-              style={styles.thermometerImage}
-              resizeMode="contain"
-            />
-            <Slider
-              style={styles.slider}
-              minimumValue={273}
-              maximumValue={373}
+            <CustomThermometerSlider
               value={sliderValue}
               onValueChange={handleSliderChange}
               onSlidingComplete={handleSlidingComplete}
-              minimumTrackTintColor="#2196F3"
-              maximumTrackTintColor="#ECECEC"
-              step={1}
             />
-            <Text style={styles.temperatureText}>
-              Suhu: {Math.round(sliderValue)}K
-            </Text>
           </View>
 
           <View style={styles.inputContainer}>
