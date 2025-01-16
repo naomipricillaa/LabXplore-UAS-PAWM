@@ -9,6 +9,10 @@ import {
   Alert,
   TextInput,
   Modal,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  Keyboard,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
@@ -161,99 +165,109 @@ export default function Profile() {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" />
-      <LinearGradient
-        colors={["#87bba2", "#f0f7ee"]}
+      <KeyboardAvoidingView 
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.container}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
       >
-        <View style={styles.headerContainer}>
-          <View style={styles.headerContent}>
-            <Image
-              source={require("../../assets/images/icon.png")}
-              style={styles.logo}
-              resizeMode="contain"
-            />
-            <Text style={styles.headerTitle}>PhysiLab</Text>
-          </View>
-        </View>
-
-        <View style={styles.content}>
-          <View style={styles.profileCard}>
-            <View style={styles.avatarContainer}>
-              <View style={styles.avatar}>
+        <LinearGradient
+          colors={["#87bba2", "#f0f7ee"]}
+          style={styles.container}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+        >
+          <ScrollView 
+            style={styles.scrollView}
+            contentContainerStyle={styles.scrollContentContainer}
+            keyboardShouldPersistTaps="handled"
+          >
+            <View style={styles.headerContainer}>
+              <View style={styles.headerContent}>
                 <Image
-                  source={require("../../assets/images/profile.png")}
-                  style={styles.avatarImage}
+                  source={require("../../assets/images/icon.png")}
+                  style={styles.logo}
+                  resizeMode="contain"
                 />
+                <Text style={styles.headerTitle}>PhysiLab</Text>
               </View>
             </View>
 
-            <View style={styles.infoSection}>
-              <Text style={styles.label}>Username:</Text>
-              {isEditing ? (
-                <TextInput
-                  style={styles.input}
-                  value={newDisplayName}
-                  onChangeText={setNewDisplayName}
-                  placeholder="Enter new username"
-                />
-              ) : (
-                <View style={styles.infoContainer}>
-                  <Text style={styles.infoText}>{displayName}</Text>
+            <View style={styles.content}>
+              <View style={styles.profileCard}>
+                <View style={styles.avatarContainer}>
+                  <View style={styles.avatar}>
+                    <Image
+                      source={require("../../assets/images/profile.png")}
+                      style={styles.avatarImage}
+                    />
+                  </View>
                 </View>
-              )}
 
-              <Text style={styles.label}>Email:</Text>
-              {isEditing ? (
-                <TextInput
-                  style={styles.input}
-                  value={newEmail}
-                  onChangeText={setNewEmail}
-                  placeholder="Enter new email"
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                />
-              ) : (
-                <View style={styles.infoContainer}>
-                  <Text style={styles.infoText}>{userEmail}</Text>
-                </View>
-              )}
+                <View style={styles.infoSection}>
+                  <Text style={styles.label}>Username:</Text>
+                  {isEditing ? (
+                    <TextInput
+                      style={styles.input}
+                      value={newDisplayName}
+                      onChangeText={setNewDisplayName}
+                      placeholder="Enter new username"
+                    />
+                  ) : (
+                    <View style={styles.infoContainer}>
+                      <Text style={styles.infoText}>{displayName}</Text>
+                    </View>
+                  )}
 
-              {isEditing ? (
-                <View style={styles.buttonGroup}>
+                  <Text style={styles.label}>Email:</Text>
+                  {isEditing ? (
+                    <TextInput
+                      style={styles.input}
+                      value={newEmail}
+                      onChangeText={setNewEmail}
+                      placeholder="Enter new email"
+                      keyboardType="email-address"
+                      autoCapitalize="none"
+                    />
+                  ) : (
+                    <View style={styles.infoContainer}>
+                      <Text style={styles.infoText}>{userEmail}</Text>
+                    </View>
+                  )}
+
+                  {isEditing ? (
+                    <View style={styles.buttonGroup}>
+                      <TouchableOpacity
+                        style={[styles.editButton, { backgroundColor: "#FF4444" }]}
+                        onPress={handleCancel}
+                      >
+                        <Text style={styles.buttonText}>Cancel</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={styles.editButton}
+                        onPress={handleSave}
+                      >
+                        <Text style={styles.buttonText}>Save</Text>
+                      </TouchableOpacity>
+                    </View>
+                  ) : (
+                    <TouchableOpacity
+                      style={styles.editButton}
+                      onPress={handleEdit}
+                    >
+                      <Text style={styles.buttonText}>Edit Profile</Text>
+                    </TouchableOpacity>
+                  )}
+
                   <TouchableOpacity
-                    style={[styles.editButton, { backgroundColor: "#FF4444" }]}
-                    onPress={handleCancel}
+                    style={styles.logoutButton}
+                    activeOpacity={0.8}
+                    onPress={handleLogout}
                   >
-                    <Text style={styles.buttonText}>Cancel</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={styles.editButton}
-                    onPress={handleSave}
-                  >
-                    <Text style={styles.buttonText}>Save</Text>
+                    <Text style={styles.buttonText}>Logout</Text>
                   </TouchableOpacity>
                 </View>
-              ) : (
-                <TouchableOpacity
-                  style={styles.editButton}
-                  onPress={handleEdit}
-                >
-                  <Text style={styles.buttonText}>Edit Profile</Text>
-                </TouchableOpacity>
-              )}
-
-              <TouchableOpacity
-                style={styles.logoutButton}
-                activeOpacity={0.8}
-                onPress={handleLogout}
-              >
-                <Text style={styles.buttonText}>Logout</Text>
-              </TouchableOpacity>
+              </View>
             </View>
-          </View>
-        </View>
+          </ScrollView>
 
         {/* Password Confirmation Modal */}
         <Modal
@@ -296,53 +310,97 @@ export default function Profile() {
           </View>
         </Modal>
 
-        {/* Bottom Navigation Bar */}
-        <View style={styles.navigationBar}>
-          <TouchableOpacity
-            style={styles.navItem}
-            onPress={() => router.push("/calculator")}
-          >
-            <Image
-              source={require("../../assets/images/calculator.png")}
-              style={styles.navIcon}
-            />
-            <Text style={styles.navText}>Calculator</Text>
-          </TouchableOpacity>
+         {/* Bottom Navigation Bar */}
+         {!isEditing && (
+            <View style={styles.navigationBar}>
+              <TouchableOpacity
+                style={styles.navItem}
+                onPress={() => router.push("/calculator")}
+              >
+                <Image
+                  source={require("../../assets/images/calculator.png")}
+                  style={styles.navIcon}
+                />
+                <Text style={styles.navText}>Calculator</Text>
+              </TouchableOpacity>
 
-          <TouchableOpacity
-            style={styles.navItem}
-            onPress={() => router.push("/material")}
-          >
-            <Image
-              source={require("../../assets/images/material.png")}
-              style={styles.navIcon}
-            />
-            <Text style={styles.navText}>Material</Text>
-          </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.navItem}
+                onPress={() => router.push("/material")}
+              >
+                <Image
+                  source={require("../../assets/images/material.png")}
+                  style={styles.navIcon}
+                />
+                <Text style={styles.navText}>Material</Text>
+              </TouchableOpacity>
 
-          <TouchableOpacity
-            style={styles.navItem}
-            onPress={() => router.push("/landing")}
-          >
-            <Image
-              source={require("../../assets/images/home.png")}
-              style={styles.navIcon}
-            />
-            <Text style={styles.navText}>Home</Text>
-          </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.navItem}
+                onPress={() => router.push("/landing")}
+              >
+                <Image
+                  source={require("../../assets/images/home.png")}
+                  style={styles.navIcon}
+                />
+                <Text style={styles.navText}>Home</Text>
+              </TouchableOpacity>
 
-          <TouchableOpacity
-            style={styles.navItem}
-            onPress={() => router.push("/profile")}
+              <TouchableOpacity
+                style={styles.navItem}
+                onPress={() => router.push("/profile")}
+              >
+                <Image
+                  source={require("../../assets/images/profile.png")}
+                  style={styles.navIcon}
+                />
+                <Text style={styles.navText}>Profile</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+
+          {/* Password Confirmation Modal */}
+          <Modal
+            visible={showPasswordModal}
+            transparent={true}
+            animationType="fade"
           >
-            <Image
-              source={require("../../assets/images/profile.png")}
-              style={styles.navIcon}
-            />
-            <Text style={styles.navText}>Profile</Text>
-          </TouchableOpacity>
-        </View>
-      </LinearGradient>
+            <View style={styles.modalOverlay}>
+              <View style={styles.modalContent}>
+                <Text style={styles.modalTitle}>Confirm Password</Text>
+                <Text style={styles.modalText}>
+                  Please enter your password to save changes
+                </Text>
+                <TextInput
+                  style={styles.passwordInput}
+                  value={password}
+                  onChangeText={setPassword}
+                  placeholder="Enter your password"
+                  secureTextEntry
+                  autoCapitalize="none"
+                />
+                <View style={styles.modalButtons}>
+                  <TouchableOpacity
+                    style={[styles.modalButton, { backgroundColor: "#FF4444" }]}
+                    onPress={() => {
+                      setShowPasswordModal(false);
+                      setPassword("");
+                    }}
+                  >
+                    <Text style={styles.buttonText}>Cancel</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[styles.modalButton, { backgroundColor: "#FF8C00" }]}
+                    onPress={handleUpdateProfile}
+                  >
+                    <Text style={styles.buttonText}>Confirm</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          </Modal>
+        </LinearGradient>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
@@ -350,6 +408,13 @@ export default function Profile() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  scrollContentContainer: {
+    flexGrow: 1,
+    paddingBottom: 20,
   },
   headerContainer: {
     position: "absolute",

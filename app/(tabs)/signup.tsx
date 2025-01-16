@@ -7,6 +7,9 @@ import {
   TouchableOpacity,
   Alert,
   Image,
+  ScrollView, // Add this import
+  KeyboardAvoidingView, // Add this import
+  Platform, // Add this import
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
@@ -72,74 +75,87 @@ const Signup = () => {
   };
 
   return (
-    <LinearGradient colors={["#87bba2", "#f0f7ee"]} style={styles.container}>
-      <View style={styles.headerContainer}>
-        <View style={styles.headerContent}>
-          <Image
-            source={require("../../assets/images/icon.png")}
-            style={styles.logo}
-            resizeMode="contain"
-          />
-          <Text style={styles.headerTitle}>PhysiLab</Text>
-        </View>
-      </View>
-      <View style={styles.loginContainer}>
-        <Text style={styles.label}>Username:</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter your username"
-          placeholderTextColor="#999"
-          value={username} // Tambahkan ini
-          onChangeText={setUsername} // Tambahkan ini
-        />
+    <KeyboardAvoidingView 
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={{ flex: 1 }}
+    >
+      <ScrollView 
+        contentContainerStyle={styles.scrollContainer}
+        keyboardShouldPersistTaps="handled"
+      >
+        <LinearGradient colors={["#87bba2", "#f0f7ee"]} style={styles.container}>
+          <View style={styles.headerContainer}>
+            <View style={styles.headerContent}>
+              <Image
+                source={require("../../assets/images/icon.png")}
+                style={styles.logo}
+                resizeMode="contain"
+              />
+              <Text style={styles.headerTitle}>PhysiLab</Text>
+            </View>
+          </View>
+          <View style={styles.loginContainer}>
+            <Text style={styles.label}>Username:</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter your username"
+              placeholderTextColor="#999"
+              value={username} // Tambahkan ini
+              onChangeText={setUsername} // Tambahkan ini
+            />
 
-        <Text style={styles.label}>Email:</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter your Email"
-          placeholderTextColor="#999"
-          value={email} // Tambahkan ini
-          onChangeText={setEmail} // Tambahkan ini
-        />
+            <Text style={styles.label}>Email:</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter your Email"
+              placeholderTextColor="#999"
+              value={email} // Tambahkan ini
+              onChangeText={setEmail} // Tambahkan ini
+            />
 
-        <Text style={styles.label}>Password:</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter your password"
-          placeholderTextColor="#999"
-          secureTextEntry={true}
-          value={password} // Tambahkan ini
-          onChangeText={setPassword} // Tambahkan ini
-        />
+            <Text style={styles.label}>Password:</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter your password"
+              placeholderTextColor="#999"
+              secureTextEntry={true}
+              value={password} // Tambahkan ini
+              onChangeText={setPassword} // Tambahkan ini
+            />
 
-        <Text style={styles.label}>Password Confirmation:</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter your password confirmation"
-          placeholderTextColor="#999"
-          secureTextEntry={true}
-          value={confirmPassword} // Tambahkan ini
-          onChangeText={setConfirmPassword} // Tambahkan ini
-        />
+            <Text style={styles.label}>Password Confirmation:</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter your password confirmation"
+              placeholderTextColor="#999"
+              secureTextEntry={true}
+              value={confirmPassword} // Tambahkan ini
+              onChangeText={setConfirmPassword} // Tambahkan ini
+            />
 
-        <TouchableOpacity style={styles.button} onPress={handleSignup}>
-          <Text style={styles.buttonText}>Sign Up</Text>
-        </TouchableOpacity>
+            <TouchableOpacity style={styles.button} onPress={handleSignup}>
+              <Text style={styles.buttonText}>Sign Up</Text>
+            </TouchableOpacity>
 
-        <View style={styles.signupOption}>
-          <Text style={styles.signupText}>Sudah punya akun? </Text>
-          <TouchableOpacity onPress={navigateToLogin}>
-            <Text style={styles.signupLink}>Masuk Sekarang</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </LinearGradient>
+            <View style={styles.signupOption}>
+              <Text style={styles.signupText}>Sudah punya akun? </Text>
+              <TouchableOpacity onPress={navigateToLogin}>
+                <Text style={styles.signupLink}>Masuk Sekarang</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </LinearGradient>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
+  scrollContainer: {
+    flexGrow: 1,
+  },
   container: {
-    flex: 1,
+    minHeight: '100%', // Add this
     alignItems: "center",
     justifyContent: "center",
     padding: 20,

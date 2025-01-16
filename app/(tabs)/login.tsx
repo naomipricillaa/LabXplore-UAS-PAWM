@@ -7,6 +7,9 @@ import {
   TouchableOpacity,
   Alert,
   Image,
+  ScrollView, // Add this import
+  KeyboardAvoidingView, // Add this import
+  Platform, // Add this import
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
@@ -60,60 +63,73 @@ const Login = () => {
   };
 
   return (
-    <LinearGradient colors={["#87bba2", "#f0f7ee"]} style={styles.container}>
-      <View style={styles.headerContainer}>
-        <View style={styles.headerContent}>
-          <Image
-            source={require("../../assets/images/icon.png")}
-            style={styles.logo}
-            resizeMode="contain"
-          />
-          <Text style={styles.headerTitle}>PhysiLab</Text>
+    <KeyboardAvoidingView 
+    behavior={Platform.OS === "ios" ? "padding" : "height"}
+    style={{ flex: 1 }}
+    >
+      <ScrollView 
+        contentContainerStyle={styles.scrollContainer}
+        keyboardShouldPersistTaps="handled"
+      >
+        <LinearGradient colors={["#87bba2", "#f0f7ee"]} style={styles.container}>
+        <View style={styles.headerContainer}>
+          <View style={styles.headerContent}>
+            <Image
+              source={require("../../assets/images/icon.png")}
+              style={styles.logo}
+              resizeMode="contain"
+            />
+            <Text style={styles.headerTitle}>PhysiLab</Text>
+          </View>
         </View>
-      </View>
 
-      <View style={styles.loginContainer}>
-        <Text style={styles.label}>Email:</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter your email"
-          placeholderTextColor="#999"
-          value={email}
-          onChangeText={setEmail}
-          editable={!loading}
-          autoCapitalize="none"
-          keyboardType="email-address" // Tambahkan ini untuk keyboard email
-        />
+          <View style={styles.loginContainer}>
+            <Text style={styles.label}>Email:</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter your email"
+              placeholderTextColor="#999"
+              value={email}
+              onChangeText={setEmail}
+              editable={!loading}
+              autoCapitalize="none"
+              keyboardType="email-address" // Tambahkan ini untuk keyboard email
+            />
 
-        <Text style={styles.label}>Password:</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter your password"
-          placeholderTextColor="#999"
-          secureTextEntry={true}
-          value={password}
-          onChangeText={setPassword}
-          editable={!loading}
-        />
+            <Text style={styles.label}>Password:</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter your password"
+              placeholderTextColor="#999"
+              secureTextEntry={true}
+              value={password}
+              onChangeText={setPassword}
+              editable={!loading}
+            />
 
-        <TouchableOpacity style={styles.button} onPress={handleLogin}>
-          <Text style={styles.buttonText}>Login</Text>
-        </TouchableOpacity>
+            <TouchableOpacity style={styles.button} onPress={handleLogin}>
+              <Text style={styles.buttonText}>Login</Text>
+            </TouchableOpacity>
 
-        <View style={styles.signupOption}>
-          <Text style={styles.signupText}>Belum punya akun? </Text>
-          <TouchableOpacity onPress={navigateToSignup}>
-            <Text style={styles.signupLink}>Daftar Sekarang</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </LinearGradient>
+            <View style={styles.signupOption}>
+              <Text style={styles.signupText}>Belum punya akun? </Text>
+              <TouchableOpacity onPress={navigateToSignup}>
+                <Text style={styles.signupLink}>Daftar Sekarang</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </LinearGradient>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
+  scrollContainer: {
+    flexGrow: 1,
+  },
   container: {
-    flex: 1,
+    minHeight: '100%', // Add this
     alignItems: "center",
     justifyContent: "center",
     padding: 20,
