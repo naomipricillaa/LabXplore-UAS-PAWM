@@ -6,12 +6,21 @@ import {
     ScrollView,
     TouchableOpacity,
     TextInput,
+    Alert,
 } from "react-native";
-import { useRouter } from "expo-router";
+import { useRouter, useFocusEffect  } from "expo-router";
 import { useEffect, useState, useCallback } from "react";
 import Slider from "@react-native-community/slider";
 import supabase from "../lib/supabase";
-  
+
+// Default values and constants
+const DEFAULT_VALUES = {
+    volume: "5",
+    mol: "5",
+    temperature: "300",
+    sliderValue: 300
+};
+
 interface HistoryItem {
     id: string;
     volume: string;
@@ -23,44 +32,124 @@ interface HistoryItem {
 
 export default function Calculator() {
     const router = useRouter();
-    const [volume, setVolume] = useState<string>("5");
-    const [mol, setMol] = useState<string>("5");
-    const [temperature, setTemperature] = useState<string>("300");
-    const [sliderValue, setSliderValue] = useState<number>(300);
+    const [volume, setVolume] = useState<string>(DEFAULT_VALUES.volume);
+    const [mol, setMol] = useState<string>(DEFAULT_VALUES.mol);
+    const [temperature, setTemperature] = useState<string>(DEFAULT_VALUES.temperature);
+    const [sliderValue, setSliderValue] = useState<number>(DEFAULT_VALUES.sliderValue);
     const [pressure, setPressure] = useState<string>("0");
     const [history, setHistory] = useState<HistoryItem[]>([]);
     const [userId, setUserId] = useState<string | null>(null);
 
-    const fetchHistory = async (userId: string) => {
+    const resetToDefaults = useCallback(() => {
+        setVolume(DEFAULT_VALUES.volume);
+        setMol(DEFAULT_VALUES.mol);
+        setTemperature(DEFAULT_VALUES.temperature);
+        setSliderValue(DEFAULT_VALUES.sliderValue);
+        setPressure("0");
+    }, []);
+
+    const checkSession = async () => {
         try {
+            const { data: { session }, error } = await supabase.auth.getSession();
+            
+            if (error) throw error;
+
+            if (!session) {
+                // No valid session, redirect to login
+                router.replace("/login");
+                return false;
+            }
+
+            // Update userId if it's different
+            if (session.user.id !== userId) {
+                setUserId(session.user.id);
+                return true;
+            }
+
+            return true;
+        } catch (error) {
+            console.error("Session check error:", error);
+            router.replace("/login");
+            return false;
+        }
+    };
+
+    const fetchHistory = async () => {
+        try {
+            const isSessionValid = await checkSession();
+            if (!isSessionValid) return;
+
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) return;
+
             const { data, error } = await supabase
                 .from('calculation_history')
                 .select('*')
-                .eq('user_id', userId)
+                .eq('user_id', session.user.id)
                 .order('created_at', { ascending: false });
 
             if (error) throw error;
             setHistory(data || []);
         } catch (error) {
             console.error('Error fetching history:', error);
+            Alert.alert("Error", "Failed to fetch calculation history");
         }
     };
 
     useEffect(() => {
-        checkUser();
+        const setupComponent = async () => {
+            try {
+                const { data: { session }, error } = await supabase.auth.getSession();
+                
+                if (error) throw error;
+
+                if (!session) {
+                    router.replace("/login");
+                    return;
+                }
+
+                // Reset inputs when user ID changes or component mounts
+                if (session.user.id !== userId) {
+                    setUserId(session.user.id);
+                    resetToDefaults();
+                }
+
+                fetchHistory();
+            } catch (error) {
+                console.error("Session check error:", error);
+                router.replace("/login");
+            }
+        };
+
+        setupComponent();
+
+        // Modified auth state change listener
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+            if (event === 'SIGNED_IN') {
+                if (session?.user.id) {
+                    setUserId(session.user.id);
+                    resetToDefaults(); // Reset inputs on new sign in
+                    fetchHistory();
+                }
+            } else if (event === 'SIGNED_OUT') {
+                setUserId(null);
+                setHistory([]);
+                resetToDefaults(); // Reset inputs on sign out
+                router.replace("/login");
+            }
+        });
+
+        return () => {
+            subscription.unsubscribe();
+        };
     }, []);
 
-    const checkUser = async () => {
-        const {
-            data: { session },
-        } = await supabase.auth.getSession();
-        if (!session) {
-            router.replace("/login");
-            return;
-        }
-        setUserId(session.user.id);
-        fetchHistory(session.user.id);
-    };
+    // Replace router.addListener with useFocusEffect
+    useFocusEffect(
+        useCallback(() => {
+            resetToDefaults(); // Reset inputs when screen comes into focus
+        }, [resetToDefaults])
+    );
 
     const saveCalculation = async (
         volume: number,
@@ -69,10 +158,16 @@ export default function Calculator() {
         pressure: number
     ) => {
         try {
+            const isSessionValid = await checkSession();
+            if (!isSessionValid) return;
+
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) return;
+
             const { error } = await supabase
                 .from('calculation_history')
                 .insert({
-                    user_id: userId,
+                    user_id: session.user.id,
                     volume,
                     mol,
                     temperature,
@@ -81,11 +176,11 @@ export default function Calculator() {
 
             if (error) throw error;
 
-            if (userId) {
-                fetchHistory(userId);
-            }
+            // Refresh history after saving
+            fetchHistory();
         } catch (error) {
             console.error('Error saving calculation:', error);
+            Alert.alert("Error", "Failed to save calculation");
         }
     };
 
@@ -98,6 +193,9 @@ export default function Calculator() {
     }, []);
 
     const calculatePressure = useCallback(async () => {
+        const isSessionValid = await checkSession();
+        if (!isSessionValid) return;
+
         const n = parseFloat(mol);
         const T = parseFloat(temperature);
         const V = parseFloat(volume);
@@ -113,22 +211,29 @@ export default function Calculator() {
         setPressure(result);
         
         await saveCalculation(V, n, T, parseFloat(result));
-    }, [mol, temperature, volume, userId]);
+    }, [mol, temperature, volume]);
 
     const clearHistory = useCallback(async () => {
         try {
+            const isSessionValid = await checkSession();
+            if (!isSessionValid) return;
+
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) return;
+
             const { error } = await supabase
                 .from('calculation_history')
                 .delete()
-                .eq('user_id', userId);
+                .eq('user_id', session.user.id);
 
             if (error) throw error;
 
             setHistory([]);
         } catch (error) {
             console.error('Error clearing history:', error);
+            Alert.alert("Error", "Failed to clear history");
         }
-    }, [userId]);
+    }, []);
 
     return (
         <View style={styles.container}>
@@ -199,12 +304,21 @@ export default function Calculator() {
                             placeholder="Masukkan suhu dalam K"
                         />
   
+                    <View style={styles.buttonContainer}>
                         <TouchableOpacity
                             style={styles.calculateButton}
                             onPress={calculatePressure}
                         >
                             <Text style={styles.calculateButtonText}>Hitung Tekanan</Text>
                         </TouchableOpacity>
+
+                        <TouchableOpacity
+                            style={styles.resetButton}
+                            onPress={resetToDefaults}
+                        >
+                            <Text style={styles.resetButtonText}>Reset</Text>
+                        </TouchableOpacity>
+                    </View>
                     </View>
   
                     <View style={styles.resultContainer}>
@@ -371,16 +485,9 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontFamily: "Montserrat-Regular",
     },
-    calculateButton: {
-        backgroundColor: "#FF8C00",
-        padding: 15,
-        borderRadius: 12,
-        alignItems: "center",
-        marginTop: 10,
-    },
     calculateButtonText: {
         color: "white",
-        fontSize: 16,
+        fontSize: 14,
         fontFamily: "Montserrat-Bold",
     },
     resultContainer: {
@@ -479,5 +586,30 @@ const styles = StyleSheet.create({
         color: "#FFFFFF",
         fontSize: 12,
         fontFamily: "Montserrat-Medium",
+    },
+    buttonContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginTop: 10,
+        gap: 10,
+    },
+    calculateButton: {
+        backgroundColor: "#FF8C00",
+        padding: 15,
+        borderRadius: 12,
+        flex: 1,
+        alignItems: "center",
+    },
+    resetButton: {
+        backgroundColor: "#6c757d",
+        padding: 15,
+        borderRadius: 12,
+        flex: 1,
+        alignItems: "center",
+    },
+    resetButtonText: {
+        color: "white",
+        fontSize: 14,
+        fontFamily: "Montserrat-Bold",
     },
 });

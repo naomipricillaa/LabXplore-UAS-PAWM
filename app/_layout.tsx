@@ -14,26 +14,40 @@ import { StyleSheet } from "react-native";
 import { useState } from "react";
 import supabase from "../app/lib/supabase";
 import { Session } from "@supabase/supabase-js";
+import { useRouter } from "expo-router";
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const [session, setSession] = useState<Session | null>(null);
   const colorScheme = useColorScheme();
   const isLoadingComplete = useCachedResources();
+  const router = useRouter();
 
-  // Hide the splash screen once the app is ready
   useEffect(() => {
     if (isLoadingComplete) {
       SplashScreen.hideAsync();
+      
+      // Check initial session
       supabase.auth.getSession().then(({ data: { session } }) => {
         setSession(session);
+        if (!session) {
+          router.replace("/(tabs)/");
+        }
       });
 
-      supabase.auth.onAuthStateChange((_event, session) => {
+      // Set up auth state listener
+      const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
         setSession(session);
+        if (!session) {
+          router.replace("/(tabs)/");
+        }
       });
+
+      // Cleanup subscription
+      return () => {
+        subscription.unsubscribe();
+      };
     }
   }, [isLoadingComplete]);
 

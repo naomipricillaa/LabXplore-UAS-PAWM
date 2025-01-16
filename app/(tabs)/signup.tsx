@@ -30,30 +30,35 @@ const Signup = () => {
       Alert.alert("Error", "Passwords do not match");
       return;
     }
-
+  
     try {
       const { data, error } = await supabase.auth.signUp({
         email: email,
         password: password,
         options: {
           data: {
-            display_name: username, // Menyimpan username sebagai display_name
+            display_name: username,
           },
         },
       });
-
+  
       if (error) throw error;
-
+  
       if (data.user) {
-        // Langsung login setelah signup berhasil
         const { data: signInData, error: signInError } =
           await supabase.auth.signInWithPassword({
             email: email,
             password: password,
           });
-
+  
         if (signInError) throw signInError;
-
+  
+        // Reset form
+        setUsername("");
+        setEmail("");
+        setPassword("");
+        setConfirmPassword("");
+        
         Alert.alert("Success", "Registration successful!");
         router.replace("/landing");
       }

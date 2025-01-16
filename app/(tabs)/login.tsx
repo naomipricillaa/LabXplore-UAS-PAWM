@@ -29,20 +29,23 @@ const Login = () => {
       Alert.alert("Error", "Please fill in all fields");
       return;
     }
-
+  
     setLoading(true);
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email: email,
         password: password,
       });
-
+  
       if (error) {
         Alert.alert("Error", "Invalid email or password");
         return;
       }
-
+  
       if (data.user) {
+        // Reset form
+        setEmail("");
+        setPassword("");
         router.replace("/landing");
       }
     } catch (error) {

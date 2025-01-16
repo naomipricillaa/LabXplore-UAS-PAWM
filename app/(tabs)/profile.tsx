@@ -25,24 +25,49 @@ export default function Profile() {
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [password, setPassword] = useState("");
 
+  // Modifikasi pada useEffect dan getUserData di profile.tsx
   useEffect(() => {
+    // Panggil getUserData saat komponen mount
     getUserData();
+
+    // Subscribe ke perubahan auth state
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session) {
+        // Update user data saat ada perubahan session
+        setUserEmail(session.user.email || "");
+        setNewEmail(session.user.email || "");
+        setDisplayName(session.user.user_metadata.display_name || "");
+        setNewDisplayName(session.user.user_metadata.display_name || "");
+      } else {
+        // Reset state saat tidak ada session
+        setUserEmail("");
+        setDisplayName("");
+        setNewEmail("");
+        setNewDisplayName("");
+      }
+    });
+
+    // Cleanup subscription saat komponen unmount
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   const getUserData = async () => {
     try {
       const {
-        data: { user },
-        error,
-      } = await supabase.auth.getUser();
+        data: { session },
+        error: sessionError,
+      } = await supabase.auth.getSession();
 
-      if (error) throw error;
+      if (sessionError) throw sessionError;
 
-      if (user) {
-        setUserEmail(user.email || "");
-        setNewEmail(user.email || "");
-        setDisplayName(user.user_metadata.display_name || "");
-        setNewDisplayName(user.user_metadata.display_name || "");
+      if (session?.user) {
+        // Update state dengan data user baru
+        setUserEmail(session.user.email || "");
+        setNewEmail(session.user.email || "");
+        setDisplayName(session.user.user_metadata.display_name || "");
+        setNewDisplayName(session.user.user_metadata.display_name || "");
       }
     } catch (error) {
       Alert.alert("Error", "Failed to load user data");
@@ -53,8 +78,17 @@ export default function Profile() {
     try {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
-
-      router.replace("/login");
+      
+      // Reset semua state
+      setUserEmail("");
+      setDisplayName("");
+      setNewEmail("");
+      setNewDisplayName("");
+      setIsEditing(false);
+      setShowPasswordModal(false);
+      setPassword("");
+      
+      router.replace("/(tabs)/");
     } catch (error) {
       Alert.alert("Error", "Failed to logout");
     }
