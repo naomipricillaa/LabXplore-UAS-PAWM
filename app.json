@@ -4,7 +4,7 @@
     "slug": "LabXplore",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/splash.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -13,14 +13,14 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/icon.png",
+        "foregroundImage": "./assets/images/splash.png",
         "backgroundColor": "#ffffff",
         "imageWidth": "75%"
       },
       "package": "com.mickyv.LabXplore"
     },
     "splash": {
-      "image": "./assets/images/icon.png",
+      "image": "./assets/images/splash.png",
       "backgroundColor": "#ffffff"
     },
     "web": {
