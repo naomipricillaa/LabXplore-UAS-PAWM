@@ -12,7 +12,6 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  Keyboard,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
@@ -24,34 +23,25 @@ export default function Profile() {
   const [userEmail, setUserEmail] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [isEditing, setIsEditing] = useState(false);
-  const [newEmail, setNewEmail] = useState("");
   const [newDisplayName, setNewDisplayName] = useState("");
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [password, setPassword] = useState("");
 
-  // Modifikasi pada useEffect dan getUserData di profile.tsx
   useEffect(() => {
-    // Panggil getUserData saat komponen mount
     getUserData();
 
-    // Subscribe ke perubahan auth state
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session) {
-        // Update user data saat ada perubahan session
         setUserEmail(session.user.email || "");
-        setNewEmail(session.user.email || "");
         setDisplayName(session.user.user_metadata.display_name || "");
         setNewDisplayName(session.user.user_metadata.display_name || "");
       } else {
-        // Reset state saat tidak ada session
         setUserEmail("");
         setDisplayName("");
-        setNewEmail("");
         setNewDisplayName("");
       }
     });
 
-    // Cleanup subscription saat komponen unmount
     return () => {
       subscription.unsubscribe();
     };
@@ -67,9 +57,7 @@ export default function Profile() {
       if (sessionError) throw sessionError;
 
       if (session?.user) {
-        // Update state dengan data user baru
         setUserEmail(session.user.email || "");
-        setNewEmail(session.user.email || "");
         setDisplayName(session.user.user_metadata.display_name || "");
         setNewDisplayName(session.user.user_metadata.display_name || "");
       }
@@ -83,10 +71,8 @@ export default function Profile() {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
       
-      // Reset semua state
       setUserEmail("");
       setDisplayName("");
-      setNewEmail("");
       setNewDisplayName("");
       setIsEditing(false);
       setShowPasswordModal(false);
@@ -103,7 +89,7 @@ export default function Profile() {
   };
 
   const handleSave = () => {
-    if (newEmail !== userEmail || newDisplayName !== displayName) {
+    if (newDisplayName !== displayName) {
       setShowPasswordModal(true);
     } else {
       setIsEditing(false);
@@ -112,13 +98,12 @@ export default function Profile() {
 
   const handleCancel = () => {
     setIsEditing(false);
-    setNewEmail(userEmail);
     setNewDisplayName(displayName);
   };
 
   const handleUpdateProfile = async () => {
     try {
-      // First verify the password
+      // Verify password
       const {
         data: { user },
         error: signInError,
@@ -132,16 +117,7 @@ export default function Profile() {
         return;
       }
 
-      // Update email if changed
-      if (newEmail !== userEmail) {
-        const { error: updateEmailError } = await supabase.auth.updateUser({
-          email: newEmail,
-        });
-
-        if (updateEmailError) throw updateEmailError;
-      }
-
-      // Update display name if changed
+      // Only update display name
       if (newDisplayName !== displayName) {
         const { error: updateMetadataError } = await supabase.auth.updateUser({
           data: { display_name: newDisplayName },
@@ -150,13 +126,11 @@ export default function Profile() {
         if (updateMetadataError) throw updateMetadataError;
       }
 
-      // Success
-      setUserEmail(newEmail);
       setDisplayName(newDisplayName);
       setShowPasswordModal(false);
       setIsEditing(false);
       setPassword("");
-      Alert.alert("Success", "Profile updated successfully");
+      Alert.alert("Success", "Username updated successfully");
     } catch (error: any) {
       Alert.alert("Error", error.message || "Failed to update profile");
     }
@@ -218,20 +192,9 @@ export default function Profile() {
                   )}
 
                   <Text style={styles.label}>Email:</Text>
-                  {isEditing ? (
-                    <TextInput
-                      style={styles.input}
-                      value={newEmail}
-                      onChangeText={setNewEmail}
-                      placeholder="Enter new email"
-                      keyboardType="email-address"
-                      autoCapitalize="none"
-                    />
-                  ) : (
-                    <View style={styles.infoContainer}>
-                      <Text style={styles.infoText}>{userEmail}</Text>
-                    </View>
-                  )}
+                  <View style={[styles.infoContainer, styles.emailContainer]}>
+                    <Text style={styles.infoText}>{userEmail}</Text>
+                  </View>
 
                   {isEditing ? (
                     <View style={styles.buttonGroup}>
@@ -253,7 +216,7 @@ export default function Profile() {
                       style={styles.editButton}
                       onPress={handleEdit}
                     >
-                      <Text style={styles.buttonText}>Edit Profile</Text>
+                      <Text style={styles.buttonText}>Edit Username</Text>
                     </TouchableOpacity>
                   )}
 
@@ -269,49 +232,49 @@ export default function Profile() {
             </View>
           </ScrollView>
 
-        {/* Password Confirmation Modal */}
-        <Modal
-          visible={showPasswordModal}
-          transparent={true}
-          animationType="fade"
-        >
-          <View style={styles.modalOverlay}>
-            <View style={styles.modalContent}>
-              <Text style={styles.modalTitle}>Confirm Password</Text>
-              <Text style={styles.modalText}>
-                Please enter your password to save changes
-              </Text>
-              <TextInput
-                style={styles.passwordInput}
-                value={password}
-                onChangeText={setPassword}
-                placeholder="Enter your password"
-                secureTextEntry
-                autoCapitalize="none"
-              />
-              <View style={styles.modalButtons}>
-                <TouchableOpacity
-                  style={[styles.modalButton, { backgroundColor: "#FF4444" }]}
-                  onPress={() => {
-                    setShowPasswordModal(false);
-                    setPassword("");
-                  }}
-                >
-                  <Text style={styles.buttonText}>Cancel</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={[styles.modalButton, { backgroundColor: "#FF8C00" }]}
-                  onPress={handleUpdateProfile}
-                >
-                  <Text style={styles.buttonText}>Confirm</Text>
-                </TouchableOpacity>
+          {/* Password Confirmation Modal */}
+          <Modal
+            visible={showPasswordModal}
+            transparent={true}
+            animationType="fade"
+          >
+            <View style={styles.modalOverlay}>
+              <View style={styles.modalContent}>
+                <Text style={styles.modalTitle}>Confirm Password</Text>
+                <Text style={styles.modalText}>
+                  Please enter your password to save changes
+                </Text>
+                <TextInput
+                  style={styles.passwordInput}
+                  value={password}
+                  onChangeText={setPassword}
+                  placeholder="Enter your password"
+                  secureTextEntry
+                  autoCapitalize="none"
+                />
+                <View style={styles.modalButtons}>
+                  <TouchableOpacity
+                    style={[styles.modalButton, { backgroundColor: "#FF4444" }]}
+                    onPress={() => {
+                      setShowPasswordModal(false);
+                      setPassword("");
+                    }}
+                  >
+                    <Text style={styles.buttonText}>Cancel</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[styles.modalButton, { backgroundColor: "#FF8C00" }]}
+                    onPress={handleUpdateProfile}
+                  >
+                    <Text style={styles.buttonText}>Confirm</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
             </View>
-          </View>
-        </Modal>
+          </Modal>
 
-         {/* Bottom Navigation Bar */}
-         {!isEditing && (
+          {/* Bottom Navigation Bar */}
+          {!isEditing && (
             <View style={styles.navigationBar}>
               <TouchableOpacity
                 style={styles.navItem}
@@ -358,47 +321,6 @@ export default function Profile() {
               </TouchableOpacity>
             </View>
           )}
-
-          {/* Password Confirmation Modal */}
-          <Modal
-            visible={showPasswordModal}
-            transparent={true}
-            animationType="fade"
-          >
-            <View style={styles.modalOverlay}>
-              <View style={styles.modalContent}>
-                <Text style={styles.modalTitle}>Confirm Password</Text>
-                <Text style={styles.modalText}>
-                  Please enter your password to save changes
-                </Text>
-                <TextInput
-                  style={styles.passwordInput}
-                  value={password}
-                  onChangeText={setPassword}
-                  placeholder="Enter your password"
-                  secureTextEntry
-                  autoCapitalize="none"
-                />
-                <View style={styles.modalButtons}>
-                  <TouchableOpacity
-                    style={[styles.modalButton, { backgroundColor: "#FF4444" }]}
-                    onPress={() => {
-                      setShowPasswordModal(false);
-                      setPassword("");
-                    }}
-                  >
-                    <Text style={styles.buttonText}>Cancel</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={[styles.modalButton, { backgroundColor: "#FF8C00" }]}
-                    onPress={handleUpdateProfile}
-                  >
-                    <Text style={styles.buttonText}>Confirm</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </View>
-          </Modal>
         </LinearGradient>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -624,5 +546,8 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 12,
     alignItems: "center",
+  },
+  emailContainer: {
+    backgroundColor: "#f5f5f5", // Slightly different background to indicate it's not editable
   },
 });
